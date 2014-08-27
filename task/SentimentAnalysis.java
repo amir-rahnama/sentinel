@@ -21,14 +21,18 @@ package com.yahoo.labs.samoa.sentinel.task;
  */
 
 import com.github.javacliparser.Configurable;
-import com.yahoo.labs.samoa.sentinel.processors.TwitterStreamSourceProcessor;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.sentinel.processors.TwitterStreamDestinationProcessor;
+import com.yahoo.labs.samoa.sentinel.processors.TwitterStreamSourceProcessor;
 import com.yahoo.labs.samoa.tasks.Task;
 import com.yahoo.labs.samoa.topology.ComponentFactory;
 import com.yahoo.labs.samoa.topology.Stream;
 import com.yahoo.labs.samoa.topology.Topology;
 import com.yahoo.labs.samoa.topology.TopologyBuilder;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 
 public class SentimentAnalysis implements Task, Configurable
@@ -39,7 +43,7 @@ public class SentimentAnalysis implements Task, Configurable
     private TwitterStreamSourceProcessor sourceProcessor;
     private TwitterStreamDestinationProcessor destProcessor;
 
-    /*public IntOption parallelismOption = new IntOption("parallelismOption", 'p', "Number of destination Processors", 1, 1, 20);
+    public IntOption parallelismOption = new IntOption("parallelismOption", 'p', "Number of destination Processors", 1, 1, 20);
 
     public StringOption evaluationNameOption = new StringOption("evalutionName", 'n', "Identifier of the evaluation", "SentimentTask"
         + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
@@ -54,22 +58,19 @@ public class SentimentAnalysis implements Task, Configurable
         "Query string to use for obtaining tweets to test the classifier.", "iphone");
 
     public StringOption languageFilterOption = new StringOption("languageFilter", 'a',
-        "Filter by language.", "en");*/
+        "Filter by language.", "en");
 
 
     @Override
     public void init()
     {
-        //sourceProcessor = new TwitterStreamSourceProcessor(instanceLimitOption.getValue(), queryTrainOption.getValue(), languageFilterOption.getValue(), true);
-        sourceProcessor = new TwitterStreamSourceProcessor(10, "", "", true);
+        sourceProcessor = new TwitterStreamSourceProcessor(instanceLimitOption.getValue(), queryTrainOption.getValue(), languageFilterOption.getValue(), true);
         builder.addEntranceProcessor(sourceProcessor);
 
         Stream stream = builder.createStream(sourceProcessor);
 
         destProcessor = new TwitterStreamDestinationProcessor();
-        //builder.addProcessor(destProcessor, parallelismOption.getValue());
-        //builder.addProcessor(destProcessor, parallelismOption.getValue());
-        builder.addProcessor(destProcessor, 3);
+        builder.addProcessor(destProcessor, parallelismOption.getValue());
         builder.connectInputShuffleStream(stream, destProcessor);
 
         sentimentTopology = builder.build();
@@ -87,9 +88,9 @@ public class SentimentAnalysis implements Task, Configurable
     {
         builder = new TopologyBuilder(factory);
         logger.info("Sucessfullyx instantiating TopologyBuilder");
-        //builder.initTopology(evaluationNameOption.getValue());
-        //logger.info("Sucessfully initializing SAMOA topology with name {}" + evaluationNameOption.getValue());
-        builder.initTopology("HEllo world");
-        logger.info("Sucessfully initializing SAMOA topology with name {}" + "hello wrold");
+        builder.initTopology(evaluationNameOption.getValue());
+        logger.info("Sucessfully initializing SAMOA topology with name {}" + evaluationNameOption.getValue());
+        //builder.initTopology("HEllo world");
+        //logger.info("Sucessfully initializing SAMOA topology with name {}" + "hello wrold");
     }
 }
