@@ -27,11 +27,11 @@ package com.yahoo.labs.samoa.sentinel.util;
  */
 
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.sentinel.sketch.Sketch;
-import moa.core.InstancesHeader;
-import weka.core.Attribute;
-import weka.core.Instance;
-import weka.core.SparseInstance;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.SparseInstance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,11 +100,14 @@ public class FilterTfIdf
         inst.setDataset(header);
         if (type.equals("S") || type.equals("H"))
         {
-            inst.setClassValue(type.equals("S") ? "S" : "H");
+            //inst.setClassValue(type.equals("S") ? "S" : "H");
+            inst.setClassValue(type.equals("S") ? 0 : 1);
         }
         else
         {
-            inst.setClassMissing();
+            //inst.setClassMissing();
+            inst.setClassValue(2);
+
         }
         return inst;
     }
@@ -146,7 +149,7 @@ public class FilterTfIdf
                 }
                 else
                 {
-                    header.renameAttribute(newAttIndex + 1, e.getKey());
+                    //header.renameAttribute(newAttIndex + 1, e.getKey());
                 }
             }
         }
