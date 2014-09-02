@@ -27,11 +27,11 @@ package com.yahoo.labs.samoa.sentinel.util;
  */
 
 
+import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.sentinel.sketch.Sketch;
-import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.SparseInstance;
+import com.yahoo.labs.samoa.sentinel.sketch.Sketch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,13 +49,6 @@ public class FilterTfIdf
     public FilterTfIdf(Sketch sketch)
     {
         this.frequentItemMiner = sketch;
-    }
-
-    FilterTfIdf(Sketch sketch, Sketch posSketch, Sketch negSketch)
-    {
-        frequentItemMiner = sketch;
-        positiveFrequentItemMiner = posSketch;
-        negativeFrequentItemMiner = negSketch;
     }
 
     public Instance filter(String s, InstancesHeader header)
@@ -130,22 +123,13 @@ public class FilterTfIdf
             int oldAttIndex = frequentItemMiner.getAttIndex(e.getKey());
             frequentItemMiner.addToken(e.getKey(), e.getValue(), type.equals("S") ? 1 : 0);
 
-            if (type.equals("S"))
-            {
-                negativeFrequentItemMiner.addToken((String) e.getKey(), ((Integer) e.getValue()).intValue());
-            }
-            if (type.equals("H"))
-            {
-                positiveFrequentItemMiner.addToken((String) e.getKey(), ((Integer) e.getValue()).intValue());
-            }
-
             int newAttIndex = frequentItemMiner.getAttIndex(e.getKey());
             if (oldAttIndex == -1)
             {
                 if (newAttIndex + 1 > header.numAttributes() - 1)
                 {
                     Attribute newAtt = new Attribute(e.getKey());
-                    header.insertAttributeAt(newAtt, newAttIndex + 1);
+                    //header.insertAttributeAt(newAtt, newAttIndex + 1);
                 }
                 else
                 {
