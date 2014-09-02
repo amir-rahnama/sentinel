@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class LanguageDetector
 {
-    private static final String profileDirectory = "src/main/resources/profiles";
+    private static final String profileDirectory = "/Users/amir/dev/personal/samoa/samoa-api/src/main/resources/profiles";
 
     public LanguageDetector() throws LangDetectException
     {
