@@ -35,6 +35,7 @@ import com.yahoo.labs.samoa.moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.sentinel.processors.PipeProcessor;
 import com.yahoo.labs.samoa.sentinel.sketch.Sketch;
+import com.yahoo.labs.samoa.sentinel.sketch.SpaceSaving;
 import com.yahoo.labs.samoa.sentinel.util.FilterTfIdf;
 
 import java.io.*;
@@ -66,19 +67,12 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
     public ClassOption sketchOption = new ClassOption("sketch", 's',
         "Sketch algorithm to use.", Sketch.class, "SpaceSaving");
     public StringOption queryStringOption = new StringOption("queryString", 'q',
-        "Query string to use for obtaining tweets.", "obama");
+        "Query string to use for obtaining tweets.", "russia");
     public FileOption tweetFileOption = new FileOption("tweetFile", 'f',
         "Destination TWEET file.", null, "tweet", true);
     public FileOption inputTweetFileOption = new FileOption("inputTweetFile", 'i',
         "Input TWEET file.", null, "tweet", true);
 
-
-    public TwitterStreamInstance(String query, String language, boolean isTraining)
-    {
-        queryStringOption.setValue(query);
-        languageFilterOption.setValue(language);
-        isTrainingOption = isTraining;
-    }
 
     public void shutdown()
     {
@@ -194,7 +188,10 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
     {
         if (filterTfIdf == null)
         {
-            Sketch sketch = (Sketch) getPreparedClassOption(sketchOption);
+            //Sketch sketch = (Sketch) getPreparedClassOption(sketchOption);
+            SpaceSaving sketch = new SpaceSaving();
+            sketch.prepareForUse();
+
             filterTfIdf = new FilterTfIdf(sketch);
         }
     }
