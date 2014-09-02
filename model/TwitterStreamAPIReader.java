@@ -52,8 +52,7 @@ public class TwitterStreamAPIReader implements TwitterStreamReader
     @Override
     public void initStream()
     {
-        setListener();
-        twitterStream.addListener(listener);
+        setUpStreamListener();
         // sample() method internally creates a thread which manipulates TwitterStream and calls these adequate listener methods continuously.
         //twitterStream.sample();
     }
@@ -133,7 +132,7 @@ public class TwitterStreamAPIReader implements TwitterStreamReader
         this.twitterStream.shutdown();
     }
 
-    private void setListener() {
+    private void setUpStreamListener() {
         listener = new StatusListener() {
 
             public void onStatus(Status status) {
@@ -153,5 +152,7 @@ public class TwitterStreamAPIReader implements TwitterStreamReader
                 System.out.println("Got stall warning:" + warning);
             }
         };
+
+        twitterStream.addListener(listener);
     }
 }
