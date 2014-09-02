@@ -80,11 +80,11 @@ public class PipeProcessor
 
         while (result) {
             m.appendReplacement(sb, "");
-            tweet.setEmotionType("Happy");
+            tweet.setEmotionType("H");
             result = m.find();
         }
 
-        if (tweet.getEmotionType().equals("Happy")) {
+        if (tweet.getEmotionType().equals("H")) {
             m.appendTail(sb);
         } else {
             m = pSad.matcher(message);
@@ -92,7 +92,7 @@ public class PipeProcessor
 
             while (result) {
                 m.appendReplacement(sb, "");
-                tweet.setEmotionType("Sad");
+                tweet.setEmotionType("S");
                 result = m.find();
             }
             m.appendTail(sb);
@@ -125,12 +125,16 @@ public class PipeProcessor
         }
         else {
             detectLanguage();
-            String temp = message.replaceAll("\\s+", "");
-            if (!message.equals("") && !temp.equals(""))
+
+            if (!tweet.getLanguage().equals(""))
             {
-                if (tweet.getLanguageProbability() > tweet.getMinimumProbabilityThreshold())
+                String temp = message.replaceAll("\\s+", "");
+                if (!message.equals("") && !temp.equals(""))
                 {
-                    tweet.setCleanedMessage(message);
+                    if (tweet.getLanguageProbability() > tweet.getMinimumProbabilityThreshold())
+                    {
+                        tweet.setCleanedMessage(message);
+                    }
                 }
             }
         }
