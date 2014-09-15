@@ -61,13 +61,18 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
     protected static FilterTfIdf filterTfIdf;
     protected PipeProcessor processor = new PipeProcessor();
     protected int numInstances = 0;
+    protected InstanceExample lastInstanceRead;
+
+    protected int numInstancesRead;
+
+    protected Instances instances;
 
     public StringOption languageFilterOption = new StringOption("languageFilter", 'l',
         "Filter by language.", "en");
     public ClassOption sketchOption = new ClassOption("sketch", 's',
         "Sketch algorithm to use.", Sketch.class, "SpaceSaving");
     public StringOption queryStringOption = new StringOption("queryString", 'q',
-        "Query string to use for obtaining tweets.", "russia");
+        "Query string to use for obtaining tweets.", "obama");
     public FileOption tweetFileOption = new FileOption("tweetFile", 'f',
         "Destination TWEET file.", null, "tweet", true);
     public FileOption inputTweetFileOption = new FileOption("inputTweetFile", 'i',
@@ -173,15 +178,15 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
         ArrayList<String> classVal = new ArrayList<String>();
         classVal.add("H");
         classVal.add("S");
+        classVal.add("N");
 
         Attribute classAtt = new Attribute("class", classVal);
 
         ArrayList<Attribute> wekaAtt = new ArrayList<Attribute>();
         wekaAtt.add(classAtt);
 
-        streamHeader = new InstancesHeader(new Instances(
-            getCLICreationString(InstanceStream.class), wekaAtt, 0));
-        streamHeader.setClassIndex(0);
+        this.instances = new Instances(getCLICreationString(InstanceStream.class), wekaAtt, 0);
+        this.instances.setClassIndex(0);
     }
 
     private void initFilterTfIdf()
@@ -223,9 +228,8 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
 
 
     @Override
-    public InstancesHeader getHeader()
-    {
-        return this.streamHeader;
+    public InstancesHeader getHeader() {
+        return new InstancesHeader(this.instances);
     }
 
     @Override
@@ -241,37 +245,14 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
     }
 
     @Override
-    public Example<Instance> nextInstance()
+    public InstanceExample nextInstance()
     {
-        Instance inst = null;
-        if (this.isReadingFile)
-        {
-            inst = checkIfThereIsAnyInstance();
+        if (this.lastInstanceRead == null) {
+            getNextInstance();
         }
-        else
-        {
-            boolean isTweetReady = false;
-            while (isTweetReady == false)
-            {
-                inst = checkIfThereIsAnyInstance();
-                if (inst == null)
-                {
-                    try
-                    {
-                        Thread.sleep(500);
-                        System.out.println("waiting...");
-                    }
-                    catch (InterruptedException x)
-                    {
-                    }
-                }
-                else
-                {
-                    isTweetReady = true;
-                }
-            }
-        }
-        return new InstanceExample(inst);
+
+        InstanceExample prevInstance = this.lastInstanceRead;
+        return prevInstance;
     }
 
     @Override
@@ -326,9 +307,41 @@ public class TwitterStreamInstance extends AbstractOptionHandler implements
         }
         if (inst != null)
         {
-            System.out.println("CHECK " + m + " ");
+            //System.out.println("CHECK " + m + " ");
         }
         return inst;
+    }
+
+    private boolean getNextInstance() {
+        Instance inst = null;
+        boolean result = false;
+        while (result == false)
+        {
+            inst = checkIfThereIsAnyInstance();
+            if (inst == null)
+            {
+                try
+                {
+                    Thread.sleep(500);
+                    System.out.println("waiting...");
+                }
+                catch (InterruptedException x)
+                {
+                }
+            }
+            else
+            {
+                result = true;
+            }
+        }
+
+        this.instances.add(inst);
+        this.lastInstanceRead = new InstanceExample(this.instances.instance(0));
+        this.instances.delete(); // keep instances clean
+        this.numInstancesRead++;
+
+
+        return result;
     }
 
     public String[] getSketch(int n)
