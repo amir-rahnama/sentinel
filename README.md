@@ -73,13 +73,13 @@ Using Vertical Hoeffding Tree as a distributed parallel classification algorithm
 To perform sentiment analysis on a sample of 100000 tweets in real-time with 4 parallel nodes in your local cluster, run
 
 ```
-bin/samoa local target/SAMOA-Local-0.2.0-SNAPSHOT.jar "PrequentialEvaluation -d /tmp/dump.csv -i 1000000 -f 100000 -l (classifiers.trees.VerticalHoeffdingTree -p 4) -s com.yahoo.labs.samoa.sentinel.model.TwitterStreamInstance"
+bin/samoa local target/SAMOA-Local-0.3.0-SNAPSHOT.jar "PrequentialEvaluation -d /tmp/dump.csv -i 1000000 -f 100000 -l (classifiers.trees.VerticalHoeffdingTree -p 4) -s com.yahoo.labs.samoa.sentinel.model.TwitterStreamInstance"
 ```
 
 Or if you run it in Apache Storm, run
 
 ```
-bin/samoa storm target/SAMOA-Storm-0.2.0-SNAPSHOT.jar "PrequentialEvaluation -d /tmp/dump.csv -i 1000000 -f 100000 -l (classifiers.trees.VerticalHoeffdingTree -p 4) -s com.yahoo.labs.samoa.sentinel.model.TwitterStreamInstance"
+bin/samoa storm target/SAMOA-Storm-0.3.0-SNAPSHOT.jar "PrequentialEvaluation -d /tmp/dump.csv -i 1000000 -f 100000 -l (classifiers.trees.VerticalHoeffdingTree -p 4) -s com.yahoo.labs.samoa.sentinel.model.TwitterStreamInstance"
 ```
 ### Configuration by Code
 Put the following code under ```samoa-local(samoa-storm)/src/main/java/com/yahoo/labs/samoa/```:
